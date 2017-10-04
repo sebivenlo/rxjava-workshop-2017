@@ -1,0 +1,28 @@
+Intro:
+- Concurrency
+    - threading/multi-processing
+    - event-driven programming
+- functional programming
+- Java 8 streams, lambdas, futures
+    - Observable Pattern
+- RxJava
+    - Modified Observable Pattern vs Iterator Pattern
+    - generators (input)
+    - transformers (changing data)
+    - consumers (output)
+    - different operations on streams (maybe split up over the course of the workshop)
+    - merging two things: parallel execution
+    - Backpressure
+
+Tasks:
+- Task 1
+    - TBD: General familiarization with RxJava streams, basic operations/working with streams
+- Task 2
+    - TBD: More complex operations, splitting and merging
+- Task 3
+    - TBD: Composing streams, parallel processing, more stuff
+
+###
+
+Error Handling:
+Errors are aggregated in the subscriber. If an error occurs anywhere in a chain of observables, it skips to the end, where everything can be handled at once. This way, operators and functions don't have to know how t handle exceptions other than the ones they might produce.
