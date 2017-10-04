@@ -1,30 +1,37 @@
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
-import io.reactivex.FlowableEmitter;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.functions.Function;
 
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
 
 public class Main {
+
     public static void main(String[] args) throws InterruptedException {
-        Flowable<Integer> observable = Flowable.create((FlowableEmitter<Integer> emitter) -> {
-            for (int i = 0; i < 100; i++) {
-                Thread.sleep((int) (Math.random() * 10));
-                emitter.onNext(i);
-            }
-            emitter.onComplete();
-        }, BackpressureStrategy.BUFFER).debounce(8, TimeUnit.MILLISECONDS);
-
-        observable
-                .filter(n -> n % 3 == 0)
-                .map(s -> s + "d")
-                .map(s -> s.substring(0, s.length() - 1))
-                .map(Integer::valueOf)
-                .subscribe(
-                    (s) -> System.out.println("Incoming: " + s),
-                    (e) -> System.out.println("Something went wrong: " + e.getMessage()),
-                    () -> System.out.println("This observable is finished")
-        );
-
-        Thread.sleep(1000);
+        Observable<String[]> observable = Observable.create(observableEmitter -> {
+            observableEmitter.onNext(new String[]{"11, 7", "13, 4", "10, 500"});
+            observableEmitter.onNext(new String[]{"44, 4 ", "47, 8", " 13, 9 ", "11, 5"});
+            observableEmitter.onComplete();
+        });
+        observable.scan(new Indexed<>(0, new String[]{"43, 1"}), (prev, v) -> new Indexed<>(prev.index + 1, v))
+                .flatMap(indexed -> {
+                    ArrayList<Indexed<String>> aggregate = new ArrayList<>();
+                    for (String item : indexed.item) aggregate.add(new Indexed<>(indexed.index, item));
+                    return Observable.fromIterable(aggregate);
+                })
+                .map(s -> {
+                    String[] lineParts = s.item.split("\\s*,\\s*", 2);
+                    int mealNR;
+                    int servings;
+                    mealNR = Integer.parseInt(lineParts[0].trim());
+                    servings = Integer.parseInt(lineParts[1].trim());
+                    Thread.sleep((long) (Math.random() * 1000));
+                    System.out.println("Order nr. " + s.index + ", ordered: menu nr. " + mealNR + " ," + servings + " servings.");
+                    return new Order(s.index, mealNR, servings);
+                })
+                .map(s -> {
+                    Thread.sleep(100);
+                    return new Meal(s.getOrderNr(), s.getMealNR(), "TBD");
+                })
+                .subscribe(System.out::println);
     }
 }
