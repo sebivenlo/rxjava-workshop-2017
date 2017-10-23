@@ -43,6 +43,8 @@ public class Main {
             emitter.onComplete();
         }, BackpressureStrategy.BUFFER);
 
+        System.out.println(System.currentTimeMillis());
+
         observable
                 // Make an group of orders from the input string
                 // This is necessary to determine which group-order the individual orders belong to
@@ -50,17 +52,23 @@ public class Main {
                     OrderLine ol = new OrderLine(prev.getOrderNumber() + 1);
                     for (String order : current) {
                         String[] lineParts = order.split("\\s*,\\s*", 2);
-                        int mealNR = Integer.parseInt(lineParts[0].trim());
-                        int servings = Integer.parseInt(lineParts[1].trim());
-                        ol.addOrder(new Order(ol.getOrderNumber(), mealNR, servings));
-                        System.out.println("Order nr. " + ol.getOrderNumber() + ", ordered: menu nr. " + mealNR + " ," + servings + " servings.");
+                        int mealNR;
+                        int servings;
+                        try {
+                            mealNR = Integer.parseInt(lineParts[0].trim());
+                            servings = Integer.parseInt(lineParts[1].trim());
+                            ol.addOrder(new Order(ol.getOrderNumber(), mealNR, servings));
+                            System.out.println("Order nr. " + ol.getOrderNumber() + ", ordered: menu nr. " + mealNR + " ," + servings + " servings.");
+                        } catch (NumberFormatException ignored) {
+                            System.out.println("skipped un-parseable order '" + lineParts[0].trim() + ":" + lineParts[1].trim() + "'");
+                        }
                     }
                     Thread.sleep(20);
                     return ol;
                 })
                 // Split the group-order into individual orders
                 .flatMap(Flowable::fromIterable)
-                // Remove invalid orders (non-existent meals)
+                // Remove invalid orders (non-existent meals). This is in opposition to the error handling in the regular version
                 .filter(order -> recipes.containsKey(order.getMealNR()))
                 // Orders contain requests for multiple meals
                 // Flatten the individual orders into single-meal orders
@@ -111,7 +119,7 @@ public class Main {
                 // Flattens the parallel results from the different "rails" into a single stream again
                 .sequential()
                 // Self explanatory
-                .subscribe(System.out::println);
+                .subscribe(System.out::println, throwable -> System.out.println("Got error: " + throwable.getMessage()), () -> System.out.println(System.currentTimeMillis()));
         // You can actually see the number of threads in the output
         // as meals are printed in batches of (in my case) 8
         // You can also see the thread pool in your task manager,
