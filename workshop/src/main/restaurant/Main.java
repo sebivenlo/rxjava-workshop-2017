@@ -1,14 +1,18 @@
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.concurrent.Flow;
 
 public class Main {
 
     private static Map<Integer, Recipe> recipes = new HashMap<>();
+    private static Random random = new Random();
 
     private static Collection<String> getMeals() throws FileNotFoundException {
         List<String> menu = new ArrayList<>();
@@ -33,15 +37,33 @@ public class Main {
         else return fibonacci(n - 1) + fibonacci(n - 2);
     }
 
+    private static int random_between(int min, int max) {
+        return random.nextInt(max + 1 - min) + min;
+    }
+
     public static void main(String[] args) throws FileNotFoundException, InterruptedException {
         importMeals();
-        Flowable<String[]> observable = Flowable.create(emitter -> {
-            emitter.onNext(new String[]{"11, 7", "13, 4"});
-            emitter.onNext(new String[]{"44, 4", "47, 8", " 13, 9", "11, 5"});
-            emitter.onNext(new String[]{"45, 1", " 47, 2", " 10, 2"});
-            emitter.onNext(new String[]{"10, 2", " 33, 2", " 19, 2"});
+
+//        ArrayList<ArrayList<String>> container = new ArrayList<>();
+//        for (int i = 0; i < 1000000; i++) {
+//            ArrayList<String> order = new ArrayList<>();
+//            for (int j = 0; j < random_between(1, 10); j++) {
+//                int mealNr = random_between(10, 43);
+//                int servings = random_between(1, 10);
+//                String s = mealNr + ", " + servings;
+//                order.add(s);
+//            }
+//            container.add(order);
+//        }
+//        Flowable<ArrayList<String>> observable = Flowable.fromIterable(container);
+
+        Flowable<ArrayList<String>> observable = Flowable.create(emitter -> {
+            emitter.onNext(new ArrayList<>(Arrays.asList("11, 7", "13, 4")));
+            emitter.onNext(new ArrayList<>(Arrays.asList("44, 4", "47, 8", " 13, 9", "11, 5")));
+            emitter.onNext(new ArrayList<>(Arrays.asList("45, 1", " 47, 2", " 10, 2")));
+            emitter.onNext(new ArrayList<>(Arrays.asList("10, 2", " 33, 2", " 19, 2")));
             emitter.onComplete();
-        }, BackpressureStrategy.BUFFER);
+        }, BackpressureStrategy.MISSING);
 
         System.out.println(System.currentTimeMillis());
 
@@ -51,16 +73,16 @@ public class Main {
                 .scan(new OrderLine(), (prev, current) -> {
                     OrderLine ol = new OrderLine(prev.getOrderNumber() + 1);
                     for (String order : current) {
-                        String[] lineParts = order.split("\\s*,\\s*", 2);
                         int mealNR;
                         int servings;
                         try {
+                            String[] lineParts = order.split("\\s*,\\s*", 2);
                             mealNR = Integer.parseInt(lineParts[0].trim());
                             servings = Integer.parseInt(lineParts[1].trim());
                             ol.addOrder(new Order(ol.getOrderNumber(), mealNR, servings));
                             System.out.println("Order nr. " + ol.getOrderNumber() + ", ordered: menu nr. " + mealNR + " ," + servings + " servings.");
                         } catch (NumberFormatException ignored) {
-                            System.out.println("skipped un-parseable order '" + lineParts[0].trim() + ":" + lineParts[1].trim() + "'");
+                            System.out.println("skipped un-parseable order '" + order + "'");
                         }
                     }
                     Thread.sleep(20);

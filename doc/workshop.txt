@@ -5,22 +5,32 @@ Intro:
 - functional programming
 - Java 8 streams, lambdas, futures
     - Observable Pattern
-- RxJava
-    - Modified Observable Pattern vs Iterator Pattern
-    - generators (input)
+- Modified Observable Pattern vs Iterator Pattern
+
+- graphic examples of streams with basic operations:
+    - simple input to observables
     - transformers (changing data)
     - consumers (output)
-    - different operations on streams (maybe split up over the course of the workshop)
-    - merging two things: parallel execution
-    - Backpressure
+    - stream operations, part 1
 
-Tasks:
-- Task 1
-    - TBD: General familiarization with RxJava streams, basic operations/working with streams
-- Task 2
-    - TBD: More complex operations, splitting and merging
-- Task 3
-    - TBD: Composing streams, parallel processing, more stuff
+Task 1:
+    Refactor Donald's Restaurant in two steps:
+    1. sequential, map strings -> order lines -> orders -> meals
+- review
+- parallelization
+    2. add state (scan) and parallelization
+
+- Error handling in RxJava
+- generators (input)
+- Cold vs. Hot Observables and Backpressure
+- stream operations, part 2
+
+Task 2:
+    Tweet analysis
+    http://blog.xebia.in/index.php/2015/08/31/day1-building-an-application-from-scratch-using-rxjava-and-java8/
+    TBD
+
+- review
 
 ###
 
