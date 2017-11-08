@@ -29,13 +29,10 @@ public class Main {
         else return fibonacci(n - 1) + fibonacci(n - 2);
     }
 
-    public static void main(String[] args) throws FileNotFoundException, InterruptedException {
+    public static void main(String[] args) throws FileNotFoundException {
         importMeals();
 
-        System.out.println(System.currentTimeMillis());
-
         observable
-                .subscribe(System.out::println, throwable -> System.out.println("Got error: " + throwable.getMessage()), () -> System.out.println(System.currentTimeMillis()));
-        Thread.sleep(7000);
+                .subscribe(System.out::println);
     }
 }

@@ -1,0 +1,84 @@
+RxJava Workshop - Practical Part
+
+- intro on streams:
+    - ways to enter the streams world
+    - generating test-values by hand
+- simple modeling of restaurant flow
+    * very stripped-down version of the restaurant
+    - model simple classes of needed items
+        - order: meal_number
+        - meal: meal_number, name
+    - input: string containing one meal: "42" <- assume each order has one serving
+    - transform the string into an order object (without stateful order_id)
+    - transform the order into a meal (with preparation time sleep)
+    - print the prepared meals
+- enhancement I:
+    * handle multiple orders in one string
+    - new class
+        - order_line: list of orders
+    - input: string containing multiple meals: "42, 45, 67" <- assume each order has one serving
+    - transform the string into a list of order objects (order_line)
+    - NEW: 1 input but multiple outputs: flatMap
+    - the rest stays the same
+- enhancement I.I:
+    * handle multiple servings per order
+    - change class
+        - order: add servings parameter
+    - input: string containing multiple meal-servings tuples: "42, 3; 45, 11, 67, 5;"
+    - transform the string into a list of order objects (order_line)
+        - initialize order object with servings
+    - OLD: 1 input (order) but multiple outputs (* servings): flatMap
+    - rest stays the same
+- enhancement II:
+    * state and side effects
+    * add an incremental id to orders
+    - change class
+        - order: add order_id parameter
+        - meal: add order_id parameter
+    - input stays the same
+    - NEW: counter outside of the stream: scan
+    - replace the string->order_line transformation with the scane function
+        - logic stays largely the same
+        - now gives you the new item and the previous one
+        - use the previous item to get the order_number and add 1 for the new order_line we're creating
+    - change the order->serving flatMap to accomodate for the order_id
+    - change the order->meal map to accomodate for the order_id
+- enhancement III:
+    * input sanitization
+    * what if the input string is malformed?
+    * what about exceptions?
+    # assume input data is parseable but not valid
+    - after string->order_line->order map:
+        - filter invalid orders
+    # assume input data is not parseable
+    - in string->order_line map:
+        - exceptions still have to be handled by us (try/catch blocks)
+        - generally it is preferable to keep the sequence going
+        - onError() is only for very severe errors where the sequence can't possibly continue (stops upstream)
+        - you can onErrorReturn(item) as a last default item before terminating if something goes wrong
+        - you can onErrorResumeNext(stream) to switch to a backup stream
+        - if erors may occur upstream but will go away if tried again, you can retry(count)
+        - it is generally preferable to emit an "error" item onNext than to fail onError
+        - keeping the stream going is paramount
+        - SO: handle parse exception yourself: emit empty item if failed
+- enhancement IV:
+    * concurrency
+    - after splitting order_lines into orders and splitting those orders into one order per serving:
+        - NEW: parallel() and runOn()
+        - parallel sets up a round-robin-style filter to distribute incoming items into various threads, provided by runOn(), which is a threadpool
+        - there are different ones for different purposes
+        - we can do it multiple ways:
+            - split after string-order_line map and process all servings sequentially, but order_lines in parallel
+            - split after order->order-per-serving map: process the heavy lifting (the meal preparation) in parallel
+            - the latter is preferable here
+        - the logic can stay the same, we just add the parallel() where we want it
+        - afterwards, use sequential() to aggregate into one stream again, then you can continue as normal
+    - there is also other ways to do this, but this is the new and shiny one
+- enhancement V:
+    * backpressure
+
+### TODO ###
+- präsentation ausbauen
+- leeres restaurant prüfen
+- aufgabe beschreiben
+- twitter sandbox
