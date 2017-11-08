@@ -31,8 +31,8 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
         importMeals();
-
-        observable
-                .subscribe(System.out::println);
+        System.out.println("Hello, World!");
+//        observable
+//                .subscribe(System.out::println);
     }
 }
