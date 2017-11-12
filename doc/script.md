@@ -30,4 +30,21 @@ RxJava Observables establishes **feature-parity** between Observables and Iterat
 RxJava **combines** observable sequences with functional programming, which means **operations on streams should have no side effects**.
 
 ### Java8+ Streams
+**Streams exist in Java 8**, but they are:
 
+* Pull-based
+* Single-Use
+* Don't allow merging
+* Don't support time-based operations
+
+Java 8 introduced the **CompletableFuture**, which allows callbacks.  
+But it:
+
+* does not have the operators of RxJava
+* is single-element based, no streams
+
+TODO:
+- Finish Functional Programming section
+- look at operator section
+- set up task 1 section
+- set up task 2 section
