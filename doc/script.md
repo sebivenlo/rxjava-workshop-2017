@@ -45,6 +45,5 @@ But it:
 
 TODO:
 - Finish Functional Programming section
-- look at operator section
 - set up task 1 section
 - set up task 2 section
