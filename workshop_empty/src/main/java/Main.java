@@ -34,7 +34,6 @@ public class Main {
         else return fibonacci(n - 1) + fibonacci(n - 2);
     }
 
-
     private static Meal processMeal(Order o) throws InterruptedException {
         Recipe r = recipes.get(o.getMealNR());
         long fib = fibonacci(40);
@@ -53,9 +52,16 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         importMeals();
 
-        Observable<List<String>> o = Observable.create(emitter -> emitter.onNext(Arrays.asList("", "", "")));
+        // Order Strings:
+        // "11, 7", "13, 4"
+        // "44, 4", "47, 8", " 13, 9", "11, 5"
+        // "45, 1", " 47, 2", " 10, 2"
+        // "10, 2", " 33, 2", " 19, 2"
 
-//        observable
-//                .subscribe(System.out::println);
+        /*
+         * || YOUR CODE BELOW ||
+         * \/                 \/
+         */
+
     }
 }

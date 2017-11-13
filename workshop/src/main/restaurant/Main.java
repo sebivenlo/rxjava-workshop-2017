@@ -52,7 +52,7 @@ public class Main {
         importMeals();
 
         Flowable<List<String>> observable = Flowable.create(emitter -> {
-            emitter.onNext(Arrays.asList("1a, 7", "13, 4"));
+            emitter.onNext(Arrays.asList("11, 7", "13, 4"));
             emitter.onNext(Arrays.asList("44, 4", "47, 8", " 13, 9", "11, 5"));
             emitter.onNext(Arrays.asList("45, 1", " 47, 2", " 10, 2"));
             emitter.onNext(Arrays.asList("10, 2", " 33, 2", " 19, 2"));
