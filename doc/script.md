@@ -15,7 +15,7 @@
 **Example**: Web Server, Apache vs Node.js  
 Wrong application of asynchrony in **Javascript**: **Callback Hell**
 
-### What is RxJava?
+## RxJava
 RxJava takes the **Observer Pattern** and **introduces sequences** to it.
 RxJava **extends** the Observer Pattern with two things:
 
@@ -26,10 +26,7 @@ RxJava Observables establishes **feature-parity** between Observables and Iterat
 
 **RxJava's objective is to work on discrete values that are emitted over time.**
 
-### Functional Programming
-RxJava **combines** observable sequences with functional programming, which means **operations on streams should have no side effects**.
-
-### Java8+ Streams
+### Streams in Java 8+
 **Streams exist in Java 8**, but they are:
 
 * Pull-based
@@ -43,7 +40,53 @@ But it:
 * does not have the operators of RxJava
 * is single-element based, no streams
 
+### Functional Programming
+RxJava **combines** observable sequences with functional programming, which means **operations on streams should have no side effects**.
+
+## Stream Operators
+* concat()
+* merge()
+* map()
+* filter()
+* concatMap()
+* flatMap()
+* reduce()
+* sum()
+* scan()
+
+## Task: Donald's Restaurant
+### Short Recap
+* Orders are submitted as strings in the format:  
+    `"<meal_number>, <servings>"`
+* Requests for meals are Lists that contain 1 to n Orders
+* Order strings are split at the comma and used to construct a new Order object
+* All Orders from one Request are put into an OrderLine object
+* All Orders in a Request are assigned an increasing index as the order number
+* Orders are turned into Meals while waiting for a time specified in its recipe
+
+### Tasks
+1. Create a stream of order strings and print them
+2. Parse the order strings into `Orders` and put them into `OrderLine`s, then print those
+3. Transform every `Order` in an `OrderLine` into a `Meal` and print it
+4. Filter out invalid `Orders`, based on checking their recipe number. Handle exceptions by skipping invalid items
+5. Add an incrementing order number to each new `OrderLine`
+6. Go multi-threaded by using `parallel()`
+
+## Backpressure
+**Cold** Observables emit **on subscription**  
+**Hot** Observables emit items **constantly**
+
+### Strategies
+TBD
+
+### TweetStream
+Experiment with a hot observable, tame the stream.  
+Do whatever you want with the tweets.
+
 TODO:
-- Finish Functional Programming section
-- set up task 1 section
-- set up task 2 section
+
+* Finish Functional Programming section
+* Finish Backpressure section
+* Review projects
+* Package projects
+* Update project links in presentation
