@@ -1,0 +1,8 @@
+To compile this project, 
+create a Netbeans ant-library, call it JCIP_Annotations 
+and load it with jcip-annotations.jar.
+
+The jcip-annotations.jar can be found at 
+http://www.javaconcurrencyinpractice.com/,
+binary only at 
+http://www.javaconcurrencyinpractice.com/jcip-annotations.jar
