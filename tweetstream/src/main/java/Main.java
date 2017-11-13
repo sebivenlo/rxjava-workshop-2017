@@ -15,9 +15,10 @@ import twitter4j.StatusAdapter;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 
+import java.lang.management.ManagementFactory;
 import java.util.Properties;
 
-public class SentimentAnalyzer {
+public class Main {
     private static StanfordCoreNLP pipeline;
 
     private static int sentiment(String input) {
@@ -51,29 +52,25 @@ public class SentimentAnalyzer {
                 }
             });
             twitterStream.sample();
-        }, BackpressureStrategy.BUFFER);
+        }, BackpressureStrategy.ERROR);
     }
 
     public static void main(String[] args) {
+        System.out.println(ManagementFactory.getRuntimeMXBean().getName());
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize, ssplit, parse, sentiment");
         pipeline = new StanfordCoreNLP(props);
 
         ConnectableFlowable<Status> observable = tweetObservable().publish();
         observable.connect();
-        Disposable trumpTweets = observable
-                .filter(status -> status.getText().toLowerCase().contains("trump"))
-                .parallel()
-                .runOn(Schedulers.computation())
+        Disposable tweets = observable
+                .observeOn(Schedulers.computation())
+                // .filter(status -> status.getText().toLowerCase().contains("something"))
                 .map(status -> status.getText().replaceAll("[^\\p{ASCII}]", ""))
-                .map(status -> new Tweet(status, sentiment(status)))
-                .sequential()
-                .subscribe(tweet -> System.out.println(tweet.getSentiment() + " : " + tweet.getText()));
-//        Flowable<Tweet> positiveTweets = trumpTweets.filter(tweet -> tweet.getSentiment().equals("positive"));
-//        Flowable<Tweet> neutralTweets = trumpTweets.filter(tweet -> tweet.getSentiment().equals("neutral"));
-//        Flowable<Tweet> negativeTweets = trumpTweets.filter(tweet -> tweet.getSentiment().equals("negative"));
-//        positiveTweets.subscribe(tweet -> System.out.println("positive: " + tweet.getText()));
-//        neutralTweets.subscribe(tweet -> System.out.println("neutral: " + tweet.getText()));
-//        negativeTweets.subscribe(tweet -> System.out.println("negative:" + tweet.getText()));
+                .map(status -> {
+                    Thread.sleep(1000);
+                    return new Tweet(status, sentiment(status));
+                })
+                .subscribe(tweet -> System.out.println(tweet.getSentiment() + " : " + tweet.getText()), System.out::println);
     }
 }
