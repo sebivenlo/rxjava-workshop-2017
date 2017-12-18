@@ -1,0 +1,180 @@
+\documentclass[xcolor=table]{beamer}
+
+\usepackage[american]{babel} % ngerman / american
+\usepackage[utf8]{inputenc} % For "Umlaut"s
+\usepackage{makecell}
+\usepackage[table]{xcolor}
+\definecolor{Gray}{gray}{0.8}
+\definecolor{DarkRed}{rgb}{.7,0,0}
+\definecolor{Red}{rgb}{.9,0,0}
+\definecolor{DarkGreen}{rgb}{0,.7,0}
+\definecolor{Green}{rgb}{0,.9,0}
+\usepackage{booktabs}
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\setbeamertemplate{caption}[numbered]
+\usepackage{tabularx,colortbl}
+\usepackage{minted} % Code highlighting
+\usemintedstyle{default} % Set style of code highlighting
+\usepackage{rotating}
+\usepackage{soul} % for strikethrough text: \st{Text}
+\usepackage[export]{adjustbox} % for figures:
+% \includegraphics[width=.6\textwidth,<left/right/center>]{example-image}
+\usepackage{csquotes}
+\usepackage[strict]{changepage}
+\usepackage{framed}
+\usepackage{booktabs}
+
+%--Progress Bar Setup
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\definecolor{pbblue}{HTML}{0A75A8}% color for the progress bar and the circle
+\makeatletter
+\def\progressbar@progressbar{} % the progress bar
+\newcount\progressbar@tmpcounta% auxiliary counter
+\newcount\progressbar@tmpcountb% auxiliary counter
+\newdimen\progressbar@pbht %progressbar height
+\newdimen\progressbar@pbwd %progressbar width
+\newdimen\progressbar@rcircle % radius for the circle
+\newdimen\progressbar@tmpdim % auxiliary dimension
+
+\progressbar@pbwd=1.1\linewidth
+\progressbar@pbht=1pt
+\progressbar@rcircle=2.5pt
+
+% the progress bar
+\def\progressbar@progressbar{% 
+
+    \progressbar@tmpcounta=\insertframenumber
+    \progressbar@tmpcountb=\inserttotalframenumber
+    \progressbar@tmpdim=\progressbar@pbwd
+    \multiply\progressbar@tmpdim by \progressbar@tmpcounta
+    \divide\progressbar@tmpdim by \progressbar@tmpcountb
+
+  \begin{tikzpicture}
+    \draw[pbblue!30,line width=\progressbar@pbht]
+      (0pt, 0pt) -- ++ (\progressbar@pbwd,0pt);
+
+    \filldraw[pbblue!30] %
+      (\the\dimexpr\progressbar@tmpdim-\progressbar@rcircle\relax, .5\progressbar@pbht) circle (\progressbar@rcircle);
+
+    \node[draw=pbblue!30,text width=3.5em,align=center,inner sep=1pt,
+      text=pbblue!70,anchor=east] at (0,0) {\insertframenumber/\inserttotalframenumber};
+  \end{tikzpicture}%
+}
+
+\addtobeamertemplate{headline}{}
+{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=4ex,center,dp=1ex]{white}%
+    \progressbar@progressbar%
+  \end{beamercolorbox}%
+}
+\makeatother
+%--
+
+%--Fancy Quote Setup
+\definecolor{formalshade}{rgb}{0.95,0.95,1}
+\definecolor{darkblue}{rgb}{0.5,0.8,0.9}
+
+\newenvironment{formal}{%
+  \def\FrameCommand{%
+    \hspace{1pt}%
+    {\color{darkblue}\vrule width 2pt}%
+    {\color{formalshade}\vrule width 4pt}%
+    \colorbox{formalshade}%
+  }%
+  \MakeFramed{\advance\hsize-\width\FrameRestore}%
+  \noindent\hspace{-4.55pt}% disable indenting first paragraph
+  \begin{adjustwidth}{}{7pt}%
+  \vspace{2pt}\vspace{2pt}%
+}
+{%
+  \vspace{2pt}\end{adjustwidth}\endMakeFramed%
+}
+%--
+
+% There are many different themes available for Beamer. A comprehensive list with examples is given here: http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+% You can uncomment the themes below if you would like to use a different one:
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{boxes}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{default}
+%\usetheme{Frankfurt}
+\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+%\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+\title{Confusing Concurrency}
+
+% A subtitle is optional and this may be deleted
+\subtitle{RxJava in Action}
+
+\author{Moritz Richter, Tim Wedde}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute {
+  Enterprise System Whatever \\
+  \bigskip
+  FH Techniek en Logistiek \\
+  Venlo
+}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date{\today}
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+% Let's get started
+% You can reveal the parts of a slide one at a time with the \pause command:
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% \begin{frame}{Contents}
+%   \tableofcontents % You might wish to add the option [pausesections]
+% \end{frame}
+
+% Section and subsections will appear in the presentation overview and table of contents.
+
+\include{Sections/01_intro}
+
+\include{Sections/02_rxjava}
+
+\include{Sections/03_task_1}
+
+\include{Sections/04_backpressure}
+
+\include{Sections/05_task_2}
+
+\include{Sections/99_appendix}
+
+\end{document}
